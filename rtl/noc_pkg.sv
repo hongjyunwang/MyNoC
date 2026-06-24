@@ -17,7 +17,7 @@ package noc_pkg;
     HEAD = 2'b00,
     BODY = 2'b01,
     TAIL = 2'b10,
-    HEDA_TAIL = 2'b11
+    HEAD_TAIL = 2'b11
   } flit_type_t;
 
   parameter int HEAD_META_W = 2 + X_COORD_W + Y_COORD_W + X_COORD_W + Y_COORD_W + VC_ID_W + PACKET_ID_W;
