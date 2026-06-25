@@ -1,3 +1,4 @@
+// 1 arbiter per output port
 // single N-input, 1-grant arbiter. The allocator will instantiate five of these, one per output port. 
 // Given N flits wanting to be sent out from n/s/e/w/local port, which flit should be queue up first?
 // --> Each arbiter independently decides which input port wins that output port this cycle.
@@ -53,7 +54,7 @@ module rr_arb #(
                     grant_phase2[i] = 1'b1;
             end
         end
- 
+
         // Phase 1 takes priority; fall back to phase 2 if no hit
         phase1_hit = (grant_phase1 != '0);
         // grant_o auto becomes zero when no request
