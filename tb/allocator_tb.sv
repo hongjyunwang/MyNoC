@@ -24,7 +24,7 @@ module allocator_tb;
     // --------------------------------------------------------
     logic clk_i;
     logic rst_i;
-    logic [N-1:0] req   [N];   // req[input][output]
+    logic [N-1:0] req [N];   // req[input][output]
     logic [N-1:0] grant [N];   // grant[input][output]
 
     // --------------------------------------------------------
@@ -132,7 +132,7 @@ module allocator_tb;
         clear_req();
         @(posedge clk_i); #1;
         check("no_req: grant all zero", count_grants() == 0);
-        check("no_req: mutex",          check_mutex());
+        check("no_req: mutex", check_mutex());
     endtask
 
     // --------------------------------------------------------
@@ -191,7 +191,7 @@ module allocator_tb;
                 req[i][0] = 1'b1; // every input wants output 0
             @(posedge clk_i); #1;
 
-            check($sformatf("hotspot cy%0d: mutex",      cycle), check_mutex());
+            check($sformatf("hotspot cy%0d: mutex", cycle), check_mutex());
             check($sformatf("hotspot cy%0d: grant=>req", cycle), check_grant_implies_req());
             check($sformatf("hotspot cy%0d: exactly 1 grant", cycle), count_grants() == 1);
 
@@ -206,7 +206,7 @@ module allocator_tb;
             end
         end
         check("hotspot: all N inputs granted exactly once", grant_count == N);
-        check("hotspot: all inputs covered",                granted_inputs == {N{1'b1}});
+        check("hotspot: all inputs covered", granted_inputs == {N{1'b1}});
         clear_req();
     endtask
 
@@ -235,8 +235,8 @@ module allocator_tb;
         req[3][4] = 1;
         req[4][4] = 1;
         @(posedge clk_i); #1;
-        check("overlap: mutex",        check_mutex());
-        check("overlap: grant=>req",   check_grant_implies_req());
+        check("overlap: mutex", check_mutex());
+        check("overlap: grant=>req", check_grant_implies_req());
         // output 1 has only one requester — must be granted
         check("overlap: uncontested output 1 granted", grant[0][1] == 1'b1);
 
