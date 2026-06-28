@@ -12,8 +12,6 @@
 //   - An input port can only win one output port per cycle in practice
 //     because it only has one head flit with one destination
 
-import noc_pkg::*;
-
 module allocator #(
     parameter int N = 5  // number of ports — 5 for a full mesh router
 )(
@@ -28,6 +26,8 @@ module allocator #(
     // grant[i][j] = 1 means input port i wins output port j this cycle
     output logic [N-1:0] grant [N]
 );
+
+    import noc_pkg::*;
 
     logic [N-1:0] req_per_out [N]; // req_per_out[output_port][input_port]
     logic [N-1:0] grant_per_out [N]; // grant_per_out[output_port][input_port]
