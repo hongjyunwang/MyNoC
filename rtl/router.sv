@@ -24,7 +24,7 @@ module router
     input logic rst_i,
 
     // Upstream
-    input flit_t flit_in_i  [N], // the actual flit data arriving on each of the N input ports. 
+    input flit_t flit_in_i [N], // the actual flit data arriving on each of the N input ports. 
     input logic flit_in_valid_i [N], // signaling there is an incoming flit at the port
     output logic flit_in_ready_o [N], // telling upstream router it is ready to take a new flit
 
@@ -34,7 +34,7 @@ module router
 
     // Credit interface
     input logic credit_in_i [N], // one for each output port
-    output logic credit_out_o [N]
+    output logic credit_out_o [N] // one for each input port
 );
 
     // ----------------------------------------------------------------
@@ -62,7 +62,7 @@ module router
     logic [N-1:0] held_route_r [N]; // held_route_r[input_port][output_port]
 
     // ----------------------------------------------------------------
-    // Input buffers
+    // Input buffers (input_buf.sv)
     // ----------------------------------------------------------------
     flit_t flit_buf_out [N];
     logic buf_empty [N];
@@ -93,7 +93,7 @@ module router
     endgenerate
 
     // ----------------------------------------------------------------
-    // XY routing
+    // XY routing (xy_route.sv)
     // Combinational: port_sel[i] valid same cycle head flit is at buf head
     // ----------------------------------------------------------------
     logic [4:0] port_sel [N];
@@ -114,7 +114,7 @@ module router
     endgenerate
 
     // ----------------------------------------------------------------
-    // Allocator request matrix
+    // Allocator request matrix (allocator.sv)
     // req[i][j] = 1: input port i wants output port j
     // grant[i][j] = 1: input port i is granted to output port j
     // Only assert in IDLE state with a head/head-tail flit ready
@@ -175,6 +175,7 @@ module router
     // Forward decision
     // do_forward[i][j] = grant[i][j] AND has_credit[j]
     // A flit moves only when the allocator granted it AND the downstream buffer has room.
+    // ***Note that do_forward is only high for any freshly allocated path
     // ----------------------------------------------------------------
     logic [N-1:0] do_forward [N];
     always_comb begin
@@ -197,9 +198,10 @@ module router
             if (state_r[i] == ST_ALLOCATED) begin
                 // Body/tail: forward on held route if credit available
                 for (int j = 0; j < N; j++) begin
+                    // if the output is holding the route, output has credit, has more to send, and not a fresh grant path
                     if (held_route_r[i][j] && has_credit[j] && !buf_empty[i] && !do_forward[i][j]) begin
                         buf_rd_en[i] = 1'b1; // signal to pop from fifo
-                        credit_out_o[i] = 1'b1; // update credit
+                        credit_out_o[i] = 1'b1; // update credit (increase)
                     end
                 end
             end else begin

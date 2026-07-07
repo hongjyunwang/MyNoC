@@ -14,15 +14,11 @@ import noc_pkg::*;
 
 module tb_xy_route;
 
-    // -------------------------------------------------------------------------
-    // Parameters
-    // -------------------------------------------------------------------------
     localparam int MESH_X = MESH_DIM_X; // 4
     localparam int MESH_Y = MESH_DIM_Y; // 4
     localparam int CW_X = X_COORD_W; // $clog2(4) = 2
     localparam int CW_Y = Y_COORD_W;
 
-    // Port index constants — must match xy_route.sv exactly
     localparam int PORT_N = 4;
     localparam int PORT_S = 3;
     localparam int PORT_E = 2;
@@ -36,7 +32,7 @@ module tb_xy_route;
     int total_fail = 0;
 
     // -------------------------------------------------------------------------
-    // Reference model (pure function)
+    // Expected routing results
     // Mirrors the XY routing logic in xy_route.sv exactly.
     // -------------------------------------------------------------------------
     function automatic logic [4:0] expected_port(
